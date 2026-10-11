@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#14331f">
+<link rel="icon" href="data:,">
+<title>Sequoia Idle (prototype)</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:#0e1a12;color:#eef3ea;font:14px/1.3 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;overflow:hidden;overscroll-behavior:none}
+#app{display:flex;flex-direction:column;height:100%;height:100dvh}
+#stage{position:relative;flex:1 1 auto;min-height:0;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+#cv{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:pointer}
+#hud{position:absolute;left:0;right:0;top:0;padding:8px 10px calc(8px);padding-top:max(8px,env(safe-area-inset-top));pointer-events:none;text-shadow:0 1px 3px #0009;text-align:center}
+#hud .row{display:flex;justify-content:space-between;gap:6px;font-size:12px;opacity:.95}
+#height{font-size:34px;font-weight:800;letter-spacing:.5px;line-height:1.05;margin-top:2px}
+#year{font-weight:700}
+#sap{font-size:16px;font-weight:700}
+#rates{font-size:11px;opacity:.9}
+#tags{font-size:11px;color:#ffe9a8;min-height:14px}
+#panel{flex:0 0 42%;max-height:42%;display:flex;flex-direction:column;background:#15261a;border-top:2px solid #2c4a31;min-height:0}
+#tabs{display:flex;flex:0 0 auto}
+#tabs button{flex:1;padding:9px 2px;border:0;background:#1b3021;color:#bcd0bd;font:inherit;font-weight:700;font-size:13px;border-bottom:2px solid transparent}
+#tabs button.on{color:#fff;border-bottom-color:#8fd18f;background:#20392a}
+.view{flex:1 1 auto;overflow-y:auto;padding:8px;display:none;-webkit-overflow-scrolling:touch}
+.view.on{display:block}
+.u{display:flex;align-items:center;gap:8px;width:100%;text-align:left;margin:0 0 6px;padding:8px;border-radius:8px;border:1px solid #33583a;background:#203a27;color:#eef3ea;font:inherit;touch-action:manipulation}
+.u:disabled{opacity:.5}
+.u .n{font-weight:700}
+.u .d{font-size:11px;opacity:.8}
+.u .m{flex:1;min-width:0}
+.u .c{font-weight:700;color:#ffe08a;white-space:nowrap;text-align:right;font-size:13px}
+.u .k{font-size:10px;padding:1px 5px;border-radius:5px;background:#2f5136;margin-left:4px;font-weight:400}
+.lock{opacity:.4;font-size:12px;padding:6px 8px}
+.btn{padding:8px 12px;border-radius:8px;border:1px solid #4b7a52;background:#2b4c33;color:#fff;font:inherit;font-weight:700;margin:3px 4px 3px 0;touch-action:manipulation}
+.btn.on{background:#5a9a5f}
+.seg{display:flex;gap:4px;margin-bottom:8px;align-items:center;flex-wrap:wrap}
+textarea{width:100%;height:64px;background:#0f1d13;color:#dfe;border:1px solid #33583a;border-radius:6px;font:11px monospace}
+.muted{opacity:.7;font-size:12px}
+h3{margin:6px 0;font-size:14px}
+label{display:flex;gap:8px;align-items:center;margin:6px 0}
+#modal{position:fixed;inset:0;background:#0009;display:none;align-items:center;justify-content:center;z-index:9;padding:16px}
+#modal .box{background:#1b3021;border:2px solid #4b7a52;border-radius:12px;padding:16px;max-width:320px;width:100%;text-align:center}
+@media (min-width:900px){
+ #app{flex-direction:row}
+ #panel{flex:0 0 380px;max-height:none;border-top:0;border-left:2px solid #2c4a31}
+ #height{font-size:44px}
+}
+@media (max-height:560px) and (max-width:899px){#panel{flex-basis:46%;max-height:46%}#height{font-size:26px}}
+</style>
+</head>
+<body>
+<div id="app">
+ <div id="stage">
+  <canvas id="cv"></canvas>
+  <div id="hud">
+   <div class="row"><span id="year">Year 1</span><span id="stg">Seed</span><span id="wx">Day</span></div>
+   <div id="height">1 cm</div>
+   <div id="sap">0</div>
+   <div id="rates"></div>
+   <div id="tags"></div>
+  </div>
+ </div>
+ <div id="panel">
+  <div id="tabs"><button data-t="grow" class="on">Grow</button><button data-t="cone">Cone</button><button data-t="set">Settings</button><button data-t="shop">Shop</button></div>
+  <div class="view on" id="v-grow"></div>
+  <div class="view" id="v-cone"></div>
+  <div class="view" id="v-set"></div>
+  <div class="view" id="v-shop"><h3>Shop</h3><p class="muted">Placeholder. No shop or ads in this build.</p></div>
+ </div>
+</div>
+<div id="modal"><div class="box"><div id="mtext"></div><button class="btn" id="mok">OK</button></div></div>
+<script src="main.js"></script>
+</body>
+</html>
