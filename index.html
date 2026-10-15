@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#14331f">
 <link rel="icon" href="data:,">
-<title>Sequoia Idle v0.3 (prototype)</title>
+<title>Sequoia Idle v0.4 (prototype)</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%;background:#0e1a12;color:#eef3ea;font:14px/1.3 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;overflow:hidden;overscroll-behavior:none}
@@ -21,7 +21,9 @@ html,body{margin:0;height:100%;background:#0e1a12;color:#eef3ea;font:14px/1.3 sy
 #co2f{position:absolute;left:0;top:0;bottom:0;border-radius:6px;background:linear-gradient(90deg,#6fcf6a,#e9c64a 50%,#d9573b)}
 #co2 .goal{position:absolute;left:0;top:0;bottom:0;width:2px;background:#fff}
 #ppm{min-width:64px;text-align:right}
-#btns{position:absolute;right:8px;bottom:8px;display:flex;flex-direction:column;gap:6px}
+#btns{position:absolute;right:8px;bottom:8px;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+#b-land{font-size:11px;padding:0 9px}
+@media (max-width:360px){#b-land .lt{display:none}}
 .fb{min-width:44px;height:36px;border-radius:18px;border:1px solid #fff6;background:#1d3324cc;color:#fff;font:700 13px system-ui,sans-serif;padding:0 10px}
 .fb.off{opacity:.5;text-decoration:line-through}
 #picker{position:absolute;left:6px;bottom:8px;right:64px;display:flex;gap:4px;flex-wrap:nowrap}
@@ -32,6 +34,17 @@ html,body{margin:0;height:100%;background:#0e1a12;color:#eef3ea;font:14px/1.3 sy
 .chip .auto{color:#fff;font:800 11px system-ui,sans-serif}
 .badge{position:absolute;top:-6px;right:-5px;min-width:16px;height:16px;padding:0 4px;border-radius:8px;background:#ffe066;color:#1d3324;font:900 10px/16px system-ui,sans-serif;text-align:center}
 .badge.free{background:#8fd18f;font-size:8px}
+.fb.on{background:#c98a3a;border-color:#ffe066}
+#banner{position:absolute;left:8px;right:8px;top:calc(50% - 14px);top:auto;bottom:60px;text-align:center;background:#c98a3aee;color:#fff;font:800 13px system-ui,sans-serif;padding:7px 10px;border-radius:10px;pointer-events:none}
+.boostrow{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:8px}
+.bz{position:relative;aspect-ratio:1;max-height:46px;border-radius:10px;border:1px solid #33583a;background:#203a27;padding:0;font-size:20px;filter:grayscale(1);opacity:.45;touch-action:manipulation}
+.bz.can{filter:none;opacity:1;border-color:#ffe066;box-shadow:0 0 0 1px #ffe06688}
+.bz.own{filter:none;opacity:.6;background:#16281b}
+.bz .ck{display:none;position:absolute;right:2px;bottom:0;font-size:11px;color:#8fd18f;font-weight:900}
+.bz.own .ck{display:block}
+#panel{position:relative}
+#tip{position:fixed;z-index:8;width:180px;background:#10221a;border:2px solid #ffe066;border-radius:10px;padding:8px;font-size:12px;color:#eef3ea}
+#tip .cost{color:#ffe08a;font-weight:800;margin:4px 0}
 #toast{position:absolute;left:50%;top:38%;transform:translate(-50%,-50%) scale(.8);background:#1d3324ee;border:2px solid #ffe066;color:#ffe066;padding:10px 16px;border-radius:14px;font-weight:900;font-size:16px;opacity:0;transition:all .3s;pointer-events:none;text-align:center;white-space:nowrap}
 #toast.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
 .u canvas{width:36px;height:36px;flex:0 0 36px}
@@ -85,18 +98,19 @@ label{display:flex;gap:8px;align-items:center;margin:6px 0}
    <div id="co2"><span class="lbl">CO₂</span><div class="bar"><div id="co2f"></div><div class="goal"></div></div><span id="ppm">420</span></div>
    <div id="tags"></div>
   </div>
-  <div id="btns"><button id="b-mute" class="fb" aria-label="sound">♪</button><button id="b-zoom" class="fb">Auto</button></div>
+  <div id="banner" style="display:none">Landscaping: drag a plant to move it</div>
+  <div id="btns"><button id="b-land" class="fb" aria-label="Landscape"><svg width="14" height="14" viewBox="0 0 16 16" style="vertical-align:-2px"><path d="M10 1l5 5-2 1-1.5-1.5-4 4 .8.8a2.5 2.5 0 01-3.5 3.5L1.5 10.5A2.5 2.5 0 015 7l.8.8 4-4L8.3 2.3z" fill="currentColor"/></svg><span class="lt"> Landscape</span></button><button id="b-mute" class="fb" aria-label="sound">♪</button><button id="b-zoom" class="fb">Auto</button></div>
   <div id="toast"></div>
   <div id="picker"></div>
  </div>
  <div id="panel">
-  <div id="tabs"><button data-t="plants" class="on">Plants</button><button data-t="boosts">Boosts</button><button data-t="animals">Animals</button><button data-t="more">More</button></div>
+  <div id="tabs"><button data-t="plants" class="on">Plants</button><button data-t="animals">Animals</button><button data-t="more">More</button></div>
   <div class="view on" id="v-plants"></div>
-  <div class="view" id="v-boosts"></div>
   <div class="view" id="v-animals"></div>
   <div class="view" id="v-more"></div>
  </div>
 </div>
+<div id="tip" style="display:none"></div>
 <div id="modal"><div class="box"><div id="mtext"></div><button class="btn" id="mok">OK</button></div></div>
 <script src="main.js"></script>
 </body>
