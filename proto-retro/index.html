@@ -1,0 +1,120 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Grove OS 98 – Forest.exe (Sequoia Idle retro mock-up)</title>
+<link rel="stylesheet" href="retro/98.css">
+<style>
+@font-face{font-family:PixelOp;src:url(retro/fonts/PixelOperator.ttf);font-weight:400}
+@font-face{font-family:PixelOp;src:url(retro/fonts/PixelOperator-Bold.ttf);font-weight:700}
+html,body{margin:0;height:100%;overflow:hidden;touch-action:none}
+body{background:#2a8a86 radial-gradient(circle at 50% 40%,#36a19c,#1f7470);font-family:PixelOp,monospace;font-size:16px;-webkit-font-smoothing:none}
+body,button,input,.window,.title-bar-text{font-family:PixelOp,monospace!important}
+.title-bar-text{font-size:14px;display:flex;gap:4px;align-items:center}
+canvas.px{image-rendering:pixelated}
+.desk{position:fixed;left:8px;top:8px;display:grid;gap:14px}
+.desk-icon{width:76px;display:flex;flex-direction:column;align-items:center;color:#fff;text-align:center;font-size:14px;cursor:default;text-shadow:1px 1px 0 #000}
+.desk-icon span{margin-top:3px;padding:0 2px}.desk-icon:focus span{background:#000080;outline:1px dotted #fff}
+.window.wfloat{position:fixed}.window.min{display:none}
+#forest{left:100px;top:12px;width:min(820px,calc(100vw - 340px));height:calc(100vh - 70px)}
+#forest .window-body{margin:0;display:flex;flex-direction:column;height:calc(100% - 22px)}
+.menubar{display:flex;gap:14px;padding:2px 6px;font-size:14px}.menubar u{text-decoration:underline}
+#view{flex:1;position:relative;margin:2px;box-shadow:inset -1px -1px #fff,inset 1px 1px grey,inset -2px -2px #dfdfdf,inset 2px 2px #0a0a0a;padding:2px;min-height:0;overflow:hidden}
+#view canvas{display:block}
+#forest .status-bar{margin:0 2px 2px}#forest .status-bar-field{font-size:14px;padding:2px 4px}
+#hud{display:none}
+#load{position:absolute;inset:0;display:grid;place-items:center;background:#c0c0c0;font-size:18px}
+#upg{right:12px;top:12px;width:250px}
+#upg .window-body{margin:4px}
+#shop{display:flex;flex-direction:column;background:#fff;box-shadow:inset -1px -1px #fff,inset 1px 1px grey,inset -2px -2px #dfdfdf,inset 2px 2px #0a0a0a;padding:3px;max-height:calc(100vh - 220px);overflow:auto}
+#shop button{all:unset;display:grid;grid-template-columns:34px 1fr auto;grid-template-rows:auto auto;column-gap:6px;padding:3px 4px;font-size:15px;cursor:default;color:#000}
+#shop button canvas{grid-row:1/3;align-self:center}
+#shop button b{font-weight:400}#shop .n{text-align:right;color:#444}#shop small{display:none}#shop .c{grid-column:2/4;font-size:13px;color:#2f6a2f}
+#shop button:hover:not(:disabled),#shop button.sel{background:#000080;color:#fff}#shop button.sel .c,#shop button:hover:not(:disabled) .c,#shop button.sel .n{color:#fff}
+#shop button:disabled{color:#808080}#shop button:disabled .c{color:#808080}
+#hint{font-size:13px;margin-top:6px;line-height:1.1}
+#toast{position:fixed;opacity:0;pointer-events:none}
+.float{position:fixed;pointer-events:none;color:#ff0;font-weight:700;text-shadow:1px 1px 0 #000;animation:fl .9s steps(8) forwards;transform:translate(-50%,-50%);z-index:999}
+@keyframes fl{to{margin-top:-40px;opacity:0}}
+.dialog{position:fixed;left:50%;top:40%;transform:translate(-50%,-50%);width:300px}
+.dlg{display:flex;gap:12px;align-items:center;padding:8px}.dlg p{margin:0;font-size:15px}
+.dialog .ok{min-width:75px}
+.taskbar{position:fixed;left:0;right:0;bottom:0;height:34px;background:silver;box-shadow:inset 0 1px #dfdfdf,inset 0 2px #fff;display:flex;align-items:center;gap:4px;padding:2px 3px;box-sizing:border-box;z-index:5000}
+.taskbar button{height:26px;display:flex;align-items:center;gap:4px;font-size:15px;padding:0 6px;min-width:0}
+#start{font-weight:700}#start.active{box-shadow:inset -1px -1px #fff,inset 1px 1px #0a0a0a,inset -2px -2px #dfdfdf,inset 2px 2px grey}
+.tasks{display:flex;gap:3px;flex:1;overflow:hidden}.tasks button{width:160px;justify-content:flex-start}
+.tray{height:24px;display:flex;align-items:center;gap:6px;padding:0 8px;box-shadow:inset -1px -1px #fff,inset 1px 1px grey;font-size:15px}
+#startmenu{position:fixed;left:2px;bottom:34px;width:220px;display:none;z-index:6000;background:silver;box-shadow:inset -1px -1px #0a0a0a,inset 1px 1px #dfdfdf,inset -2px -2px grey,inset 2px 2px #fff;padding:3px;flex-direction:row}
+#startmenu.open{display:flex}
+#startmenu .side{width:26px;background:linear-gradient(#1f7470,#0b3b38);color:#c8f0d0;writing-mode:vertical-rl;transform:rotate(180deg);font-weight:700;font-size:17px;padding:6px 3px;letter-spacing:1px}
+#startmenu ul{list-style:none;margin:0;padding:0;flex:1}#startmenu li{display:flex;gap:8px;align-items:center;padding:4px 8px;font-size:15px}
+#startmenu li:hover{background:#000080;color:#fff}#startmenu hr{border:0;border-top:1px solid grey;border-bottom:1px solid #fff;margin:2px}
+#credit{font-size:12px;margin-top:6px;color:#333}#credit a{color:#000080}
+@media(max-width:700px){
+ .desk{display:none}
+ #forest{left:0;top:0;width:100vw;height:calc(100vh - 34px - 122px)}
+ #upg{left:0;right:0;top:auto;bottom:34px;width:auto}
+ #upg .window-body{margin:2px}
+ #shop{flex-direction:row;overflow-x:auto;max-height:none;padding:2px}
+ #shop button{grid-template-columns:34px auto;min-width:118px}
+ #shop button .n{display:none}#shop .c{grid-column:2/3}
+ #hint,#credit{display:none}
+ .tasks button{width:auto}.tasks button span{display:none}
+ #forest .status-bar-field.opt{display:none}
+}
+.title-bar{background:linear-gradient(90deg,#1d5b3a,#5aa37a)}.title-bar.inactive{background:linear-gradient(90deg,#7a8a80,#b8c4bc)}
+</style></head><body>
+<div class="desk">
+  <div class="desk-icon" tabindex="0" data-icon="tree" data-open="forest"><span>Forest.exe</span></div>
+  <div class="desk-icon" tabindex="0" data-icon="sprout" data-open="upg"><span>Seed Shop</span></div>
+  <div class="desk-icon" tabindex="0" data-icon="note" data-open="readme"><span>readme.txt</span></div>
+  <div class="desk-icon" tabindex="0" data-icon="compost"><span>Compost Bin</span></div>
+</div>
+
+<div class="window wfloat" id="forest">
+  <div class="title-bar"><div class="title-bar-text" data-icon="tree" data-px="1">Forest.exe – Sequoia Idle</div>
+    <div class="title-bar-controls"><button aria-label="Minimize"></button><button aria-label="Maximize"></button><button aria-label="Close"></button></div></div>
+  <div class="window-body">
+    <div class="menubar"><span><u>F</u>ile</span><span><u>V</u>iew</span><span><u>G</u>row</span><span><u>H</u>elp</span></div>
+    <div id="view"><div id="load">Loading…</div></div>
+    <div class="status-bar">
+      <p class="status-bar-field">O₂: <b id="o2">0</b></p>
+      <p class="status-bar-field">Rate: <span id="rate">0/s</span></p>
+      <p class="status-bar-field">Green: <span id="gp">0%</span></p>
+      <p class="status-bar-field opt">Drag: pan · Wheel: zoom</p>
+    </div>
+  </div>
+</div>
+
+<div class="window wfloat" id="upg">
+  <div class="title-bar inactive"><div class="title-bar-text" data-icon="sprout" data-px="1">Seed Shop</div>
+    <div class="title-bar-controls"><button aria-label="Minimize"></button><button aria-label="Close"></button></div></div>
+  <div class="window-body">
+    <div id="shop"></div>
+    <div id="hint"></div>
+    <div id="credit">3D art: <a href="https://quaternius.com" target="_blank">Quaternius</a> (CC0) · <a href="RETRO-CREDITS.md" target="_blank">credits</a></div>
+  </div>
+</div>
+
+<div class="window wfloat min" id="readme" style="left:30%;top:20%;width:320px">
+  <div class="title-bar"><div class="title-bar-text" data-icon="note" data-px="1">readme.txt – Notes</div>
+    <div class="title-bar-controls"><button aria-label="Close"></button></div></div>
+  <div class="window-body"><p style="font-size:15px;margin:6px">Grove OS 98 is a made-up operating system, and this window is a mock-up shell for Sequoia Idle.<br><br>Tap the barren ground to grow cover and earn O₂. Buy seeds in Seed Shop, then tap the map to plant. Animals show up as the forest turns green.</p></div>
+</div>
+
+<div id="startmenu"><div class="side">Grove OS 98</div><ul>
+  <li data-open="forest" data-icon="tree" data-px="1">Forest.exe</li>
+  <li data-open="upg" data-icon="sprout" data-px="1">Seed Shop</li>
+  <li data-open="readme" data-icon="note" data-px="1">readme.txt</li><hr>
+  <li data-icon="leaf" data-px="1">Rest the Grove…</li></ul></div>
+
+<div class="taskbar">
+  <button id="start" data-icon="leaf" data-px="1">Grove</button>
+  <div class="tasks"><button data-task="forest" data-icon="tree" data-px="1"><span>Forest.exe</span></button><button data-task="upg" data-icon="sprout" data-px="1"><span>Seed Shop</span></button></div>
+  <div class="tray"><span data-icon="leaf" data-px="1"></span><span id="clock"></span></div>
+</div>
+<div id="hud"></div><div id="toast"></div>
+<script src="retro.js"></script><script src="main.js"></script>
+<script>
+// add pixel icons to shop rows once they exist
+const ic=['sprout','leaf','tree','tree','tree','compost'];
+const t=setInterval(()=>{const b=document.querySelectorAll('#shop button');if(b.length){b.forEach((x,i)=>x.prepend(window.__icon(ic[i]||'leaf')));clearInterval(t);}},100);
+</script>
+</body></html>
